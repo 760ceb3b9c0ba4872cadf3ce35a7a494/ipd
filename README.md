@@ -1,6 +1,20 @@
 # ipd
 Parser for .ipd, an image format used in [iPod games](https://en.wikipedia.org/wiki/IPod_game).
 
+# Example
+The following example reads an .ipd image and converts it to a PNG.
+```py
+from pathlib import Path
+import ipd_file
+
+input_path = Path("/path/to/input.ipd")
+output_path = Path("/path/to/output.png")
+
+with open(input_path, "rb") as stream:
+    header, image = ipd_file.from_stream(stream)
+    image.save(output_path)
+```
+
 # Format
 ipd is a fully little-endian format.
 
