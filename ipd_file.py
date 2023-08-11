@@ -40,6 +40,13 @@ def pixel_to556(pixel: Tuple[int, int, int]) -> int:
             (int(0b111111 * (int(pixel[2]) / 255)))
     )
 
+def pixel_from4444(pixel: int) -> Tuple[int, int, int, int]:
+    return (
+        int(pixel >> 8 & 0b11110000),
+        int(pixel >> 4 & 0b11110000),
+        int(pixel & 0b11110000),
+        int(pixel << 4 & 0b11110000)
+    )
 
 def palette_from565(stream: BinaryIO, length: int) -> ImagePalette.ImagePalette:
     palette_list = []
@@ -70,6 +77,15 @@ def pixels_from565(stream: BinaryIO, length: int) -> List[Tuple[int, int, int]]:
     for index in range(length // 2):
         pixel = int.from_bytes(stream.read(2), "little")
         pixels_list.append(pixel_from565(pixel))
+
+    return pixels_list
+
+def pixels_from4444(stream: BinaryIO, length: int) -> List[Tuple[int, int, int, int]]:
+    pixels_list = []
+
+    for index in range(length // 2):
+        pixel = int.from_bytes(stream.read(2), "little")
+        pixels_list.append(pixel_from4444(pixel))
 
     return pixels_list
 
@@ -173,8 +189,21 @@ def from_stream(
 
         return header, image
     elif flags == 0b00000011:
-        img_mode = "L"
-        decoder_mode = "L;16"
+        """
+
+        This mode is SPECIAL CASED
+        It's **4444** ordered RGBA data and needs to be flipped
+        This can't be done with the raw mode
+
+        """
+        
+        image = Image.new("RGBA", (width, height))
+        image.putdata(pixels_from4444(stream, (width * height) * 2))
+
+        if force_flip:
+            image = image.transpose(Image.FLIP_TOP_BOTTOM)
+
+        return header, image
     else:
         raise NotImplementedError(f"flag {flags:08b} not implemented")
 
