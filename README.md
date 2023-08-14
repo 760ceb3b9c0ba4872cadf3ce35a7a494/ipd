@@ -29,13 +29,14 @@ an .ipd image starts with a 16-byte header containing:
 
 ## mode table
 if you encounter an ipd image with a mode that isnt listed here, make an issue!
-|  mode | palette color count | palette color format      | bits per pixel | pixel format       | flip vertically? |
-| ----: | ------------------: | :------------------------ | -------------: | :----------------- | :--------------- |
-| `0x0` |                     |                           |              8 | grayscale          | no               |
-| `0x1` |                     |                           |             16 | RGB in 565 order   | sometimes        |
-| `0x2` |                     |                           |             16 | RGB in 556 order   | yes              |
-| `0x3` |                     |                           |             16 | RGBA in 4444 order | sometimes        |
-| `0x5` |                     |                           |             32 | RGBA in 8888 order | yes              |
-| `0x8` |                  16 | 32 bytes (can be ignored) |              4 | grayscale          | yes              |
-| `0x9` |                 256 | RGBA in 8888 order        |              8 | indexed            | yes              |
-| `0xA` |                 256 | RGB in 565 order          |              8 | indexed            | no               |
+|  mode | palette color count | palette color format      | bits per pixel | pixel format                | flip vertically? |
+| ----: | ------------------: | :------------------------ | -------------: | :-------------------------- | :--------------- |
+| `0x0` |                     |                           |              8 | grayscale                   | no               |
+| `0x1` |                     |                           |             16 | RGB in 565 order            | sometimes        |
+| `0x2` |                     |                           |             16 | RGB in 556 order            | yes              |
+| `0x3` |                     |                           |             16 | RGBA in 4444 order          | sometimes        |
+| `0x5` |                     |                           |             32 | RGBA in 8888 order          | yes              |
+| `0x6` |                     |                           |             16 | alpha+grayscale in 88 order | yes              |
+| `0x8` |                  16 | 32 bytes (can be ignored) |              4 | grayscale                   | yes              |
+| `0x9` |                 256 | RGBA in 8888 order        |              8 | indexed                     | yes              |
+| `0xA` |                 256 | RGB in 565 order          |              8 | indexed                     | no               |
