@@ -48,6 +48,13 @@ def pixel_from4444(pixel: int) -> Tuple[int, int, int, int]:
         int(pixel & 0b11110000),
         int(pixel << 4 & 0b11110000)
     )
+	
+
+def pixel_from_alpha_grayscale(pixel: int) -> Tuple[int, int]:
+    return (
+        int(pixel & 0b11111111),
+        int(pixel >> 8)
+    )
 
 
 # pixel/palette level pixel formats
@@ -83,6 +90,7 @@ def pixels_from565(stream: BinaryIO, length: int) -> List[Tuple[int, int, int]]:
 
     return pixels_list
 
+
 def pixels_from4444(stream: BinaryIO, length: int) -> List[Tuple[int, int, int, int]]:
     pixels_list = []
 
@@ -91,6 +99,16 @@ def pixels_from4444(stream: BinaryIO, length: int) -> List[Tuple[int, int, int, 
         pixels_list.append(pixel_from4444(pixel))
 
     return pixels_list
+
+
+def pixels_from_alpha_grayscale(stream: BinaryIO, length: int) -> List[Tuple[int, int]]:
+	pixels_list = []
+
+	for index in range(length // 2):
+		pixel = int.from_bytes(stream.read(2), "little")
+		pixels_list.append(pixel_from_alpha_grayscale(pixel))
+
+	return pixels_list
 
 
 # header
@@ -182,6 +200,18 @@ def from_stream(
         img_mode = "RGBA"
         decoder_mode = "RGBA"
         flip_v = True
+    elif mode == 0x6:
+        """
+        special case: 8 alpha + 8 grayscale. this mode isn't supported by Pillow
+        """
+        
+        image = Image.new("LA", (width, height))
+        image.putdata(pixels_from_alpha_grayscale(stream, (width * height) * 2))
+
+        if (force_flip is None) or force_flip:
+            image = image.transpose(Image.FLIP_TOP_BOTTOM)
+
+        return header, image
     elif mode == 0x8:
         img_mode = "L"
         decoder_mode = "L;4"
