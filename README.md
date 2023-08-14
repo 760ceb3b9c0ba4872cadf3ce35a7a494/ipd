@@ -21,7 +21,7 @@ ipd is a fully little-endian format.
 an .ipd image starts with a 16-byte header containing:
 - `width`: 4 byte unsigned integer
 - `height`: 4 byte unsigned integer
-- `mode`: 1 byte
+- `mode`: 1 byte unsigned integer
 - `color_depth`: 1 byte unsigned integer
 - 6 null bytes
 
