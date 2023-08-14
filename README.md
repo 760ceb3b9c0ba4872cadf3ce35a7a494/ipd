@@ -29,7 +29,7 @@ an .ipd image starts with a 16-byte header containing:
 
 ## mode table
 if you encounter an ipd image with a mode that isnt listed here, make an issue!
-|  mode |       palette count | palette color format      | bits per pixel | pixel format       | flip vertically? |
+|  mode | palette color count | palette color format      | bits per pixel | pixel format       | flip vertically? |
 | ----: | ------------------: | :------------------------ | -------------: | :----------------- | :--------------- |
 | `0x0` |                     |                           |              8 |                    | no               |
 | `0x1` |                     |                           |             16 | RGB in 565 order   | sometimes        |
