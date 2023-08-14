@@ -1,8 +1,8 @@
 # ipd
-Parser for .ipd, an image format used in [iPod games](https://en.wikipedia.org/wiki/IPod_game).
+python library for parsing the ipd format, an image format used in [iPod games](https://en.wikipedia.org/wiki/IPod_game).
 
-# Example
-The following example reads an .ipd image and converts it to a PNG.
+# example
+read an .ipd image and convert it to .png:
 ```py
 from pathlib import Path
 import ipd_file
@@ -15,29 +15,27 @@ with open(input_path, "rb") as stream:
     image.save(output_path)
 ```
 
-# Format
+# format
 ipd is a fully little-endian format.
 
-An .ipd image starts with a 16-byte header containing:
-- `width`: 4-byte unsigned integer
-- `height`: 4-byte unsigned integer
-- `flags`: 1-byte
-- `color_depth`: 1-byte unsigned integer
-- 6 NUL bytes
+an .ipd image starts with a 16-byte header containing:
+- `width`: 4 byte unsigned integer
+- `height`: 4 byte unsigned integer
+- `mode`: 1 byte
+- `color_depth`: 1 byte unsigned integer
+- 6 null bytes
 
-`flags` determines how to continue parsing the image.
-Despite the fact that `ipd` encodes color depth information, it appears that color depth can be determined solely from `flags` alone.
+`mode` determines how to parse the rest of the data, including the number of bits per pixel (making the color_depth field redundant)
 
-| Flag         | Palette                         | Image                                                 | Flip vertically |
-| ------------ | ------------------------------- | ----------------------------------------------------- | --------------- |
-| `0b00001000` | 32-byte palette                 | 4-bpp                                                 | Yes             |
-| `0b00000010` | Not indexed                     | 16-bpp, 556 order                                     | Yes             |
-| `0b00001010` | 512-byte, 16-bpp, 565 order     | 8-bpp                                                 | No              |
-| `0b00000000` | Not indexed                     | 8-bpp                                                 | No              |
-| `0b00000101` | Not indexed                     | 32-bpp, 8-bpc, RGBA                                   | Yes             |
-| `0b00001001` | 1024-byte, 32-bpp, 8-bpc, RGBA  | 8-bpp                                                 | Yes             |
-| `0b00000001` | Not indexed                     | 16-bpp, 565 order, RGB                                | Sometimes       |
-| `0b00000011` | ?                               | ?                                                     | ?               |
-
-If the image is indexed (ie, the colors map to a palette), read the palette first. Use the table above to determine how much to read.
-Next, read ((width*height)*bpp)/8 bytes.
+## mode table
+if you encounter an ipd image with a mode that isnt listed here, make an issue!
+| mode  | palette color count | palette color format      | bits per pixel | pixel format       | flip vertically? |
+|-------|---------------------|---------------------------|----------------|--------------------|------------------|
+| `0x0` |                     |                           | 8              |                    | no               |
+| `0x1` |                     |                           | 16             | RGB in 565 order   | sometimes        |
+| `0x2` |                     |                           | 16             | RGB in 556 order   | yes              |
+| `0x3` |                     |                           | ?              |                    | ?                |
+| `0x5` |                     |                           | 32             | RGBA in 8888 order | yes              |
+| `0x8` | 16                  | 32 bytes (can be ignored) | 4              | grayscale          | yes              |
+| `0x9` | 256                 | RGBA in 8888 order        | 8              | indexed            | yes              |
+| `0xA` | 256                 | RGB in 565 order          | 8              | indexed            | no               |
