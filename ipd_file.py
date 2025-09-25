@@ -245,6 +245,6 @@ def from_stream(
     )
 
     if extra_palette:
-        image.putpalette(extra_palette)
+        image.putpalette(extra_palette, extra_palette.rawmode)
 
     return header, image
